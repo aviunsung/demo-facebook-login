@@ -4,6 +4,8 @@
 package demo.facebook.login.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import demo.facebook.login.dto.FacebookModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -54,8 +57,20 @@ public class LoginAPI {
 					+ "&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fv1%2Flogin%2Ffacebook&scope=email,user_friends,user_location,user_gender&auth_type=rerequest";
 			response.sendRedirect(fbuk_redirection_endPoint);
 		} else {
-			response.sendRedirect("https://developers.facebook.com");
+			response.sendRedirect("https://www.facebook.com/");
 		}
 
+	}
+
+	@GetMapping
+	@RequestMapping(path = "/facebook/data", produces = "application/json")
+	@ApiOperation("Login using facebook login.")
+	public FacebookModel getUserFacebookData() {
+		String fields = "id,name,email,picture{url},friends{name,id,picture{url}},gender,birthday,location";
+		String url = "https://graph.facebook.com/v3.1/me?fields={fields}&access_token=EAAeOJom72HUBAPZCrqjYsvSIqZCWZAKntCZB5DYo8YfwFtzH0ZCkGpkhv4smRcrCYLA2gBWaxAeR4SJuaVysSYZC211yxxbka8pF1gKPp18AniwDHVqb1PMyKVfGmfLoVPO7uiTVWWv0NDyZCiPVRq7w00MvZBZCDZAuGtx7UPr5EjWrgFct8ivXxnEKyxUxtK1IZBf5QUDfIFi6NJ4s86JoMNZCWwfN1ZBlFFEi6t6a1ScmNeQZDZD";
+		Map<String, String> paramsMap = new HashMap<>();
+		paramsMap.put("fields", fields);
+		FacebookModel facebookModel = restTemplate.getForObject(url, FacebookModel.class, paramsMap);
+		return facebookModel;
 	}
 }
